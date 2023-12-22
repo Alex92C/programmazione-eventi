@@ -10,6 +10,7 @@ function Admin({
   tipoEvento,
   category,
   soldout,
+  deleteTitle,
   handleSetTitolo,
   handleSetRelatori,
   handleSetData,
@@ -17,14 +18,16 @@ function Admin({
   handleChange,
   handleSubmit,
   handleSetCategory,
-  coursesObj,
+  handleDeleteTitleChange,
   handleDelete,
-  selectedValue,
-  setSelectedValue,
 }) {
   return (
     <>
-      <div>
+      <div
+        style={{
+          marginTop: "20px",
+        }}
+      >
         <h1>Pannello di controllo</h1>
         <br />
         <br />
@@ -47,10 +50,9 @@ function Admin({
         <br />
         <h2>Rimuovi un corso</h2>
         <CourseDelete
-          coursesObj={coursesObj}
           handleDelete={handleDelete}
-          selectedValue={selectedValue}
-          setSelectedValue={setSelectedValue}
+          deleteTitle={deleteTitle}
+          handleDeleteTitleChange={handleDeleteTitleChange}
         />
         {/* <CourseInput />
       <CourseDelete /> */}

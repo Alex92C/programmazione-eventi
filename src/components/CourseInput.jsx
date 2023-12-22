@@ -81,7 +81,7 @@ function CourseInput(props) {
       </Form.Group>
 
       <Button variant="primary" type="submit">
-        Submit
+        Inserisci
       </Button>
     </Form>
   );

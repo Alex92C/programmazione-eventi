@@ -2,16 +2,20 @@ import React from "react";
 import Corso from "./Corso";
 
 const CoursesList = ({ corsi, listName }) => {
-  console.log("COURSELIST CORSI", corsi);
-
   return (
-    <ul className="corsos">
-      {corsi
-        .filter((corso) => corso.category === `${listName}`)
-        .map((corso) => (
-          <Corso coursesObj={corso} key={corso.tiolo} />
-        ))}
-    </ul>
+    <>
+      <ul className="corsos">
+        {corsi
+          .filter((corso) => corso.category === `${listName}`)
+          .map((corso) => (
+            <Corso coursesObj={corso} key={corso.tiolo} />
+          ))}
+      </ul>
+      <hr
+        color="blue"
+        style={{ padding: "1px", width: "70%", borderRadius: "5px" }}
+      />
+    </>
   );
 };
 

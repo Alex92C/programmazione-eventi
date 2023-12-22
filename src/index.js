@@ -1,161 +1,44 @@
-import React from "react";
+import React, { useState, useEffect } from "react";
 import ReactDOM from "react-dom/client";
 import "./index.css";
-import { BrowserRouter as Router, Routes, Route } from "react-router-dom";
+import {
+  BrowserRouter as Router,
+  Routes,
+  Route,
+  Navigate,
+} from "react-router-dom";
 
-import { useState, useEffect } from "react";
+import { ref, push, onValue, remove } from "firebase/database";
+import database from "./firebase";
 
 import Admin from "./Admin";
 import Home from "./Home";
+import LoginForm from "./components/LoginForm";
+
+import "bootstrap/dist/css/bootstrap.min.css";
 
 // import html2canvas from "html2canvas";
 // import jsPDF from "jspdf";
 
 import "bootstrap/dist/css/bootstrap.min.css";
 
-const coursesObj = [
-  // {
-  //   titolo: "il RUP, il DEC e la commissione di gara",
-  //   relatori: "Cons. Marcello Faviere",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "appalti",
-  //   soldout: true,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 1",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "appalti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 2",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "appalti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 3",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "appalti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 4",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "appalti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 5",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "appalti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 6",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "redazione atti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 7",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "redazione atti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 8",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "redazione atti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 9",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "redazione atti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 10",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "soggetti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 11",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "soggetti",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 12",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "piattaforme",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 13",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "piattaforme",
-  //   soldout: false,
-  // },
-  // {
-  //   titolo: "TITOLO SEMINARIO 14",
-  //   relatori: "Rovelli, Carbone, Della Marta",
-  //   data: "21 Ottobre",
-  //   photoName: "images/webinar.jpg",
-  //   category: "piattaforme",
-  //   soldout: false,
-  // },
-];
-
 function App() {
-  useEffect(() => {
-    fetch("http://localhost:30000/corsi")
-      .then((response) => response.json())
-      .then((data) => setCorsi(data))
-      .catch((error) => console.error("Error fetching data:", error));
-  }, []); // The empty dependency array ensures this effect runs once when the component mounts
-
   const [corsi, setCorsi] = useState([]);
+  const [authenticated, setAuthenticated] = useState(false);
 
   const [titolo, setTitolo] = useState("");
   const [relatori, setRelatori] = useState("");
   const [data, setData] = useState("");
   const [tipo, setTipo] = useState({ tipoEvento: "" });
   const [category, setCategory] = useState("");
-  const [soldout, setSoldout] = useState();
+  const [soldout, setSoldout] = useState(false);
+  const [deleteTitle, setDeleteTitle] = useState("");
 
-  const [selectedValue, setSelectedValue] = useState("");
+  // const [selectedValue, setSelectedValue] = useState("");
 
   const { tipoEvento } = tipo;
+
+  // const deleteRef = useRef(null); // ref per il bottone di cancellazione
 
   const handleSetTitolo = (e) => {
     setTitolo(e.target.value);
@@ -186,26 +69,59 @@ function App() {
     }));
   };
 
+  const handleDeleteTitleChange = (e) => {
+    setDeleteTitle(e.target.value);
+  };
+
+  //Funzione lettura dati da Firebase
+  const getData = () => {
+    return onValue(
+      ref(database, "eventi/"),
+      (snapshot) => {
+        const data = snapshot.val();
+        console.log(" DATA", data);
+        if (data) {
+          // Check if data exists
+          const transformedData = Object.entries(data).map(([id, value]) => ({
+            id,
+            ...value,
+          }));
+          setCorsi(transformedData);
+          console.log("TRANSFORM DATA", transformedData);
+        } else {
+          setCorsi([]); // If no data, set corsi to an empty array
+        }
+      },
+      { onlyOnce: true }
+    );
+  };
+
+  //Funzione salvataggio dati su Firebase
   const handleSubmit = (e) => {
     e.preventDefault();
 
-    const pushNewData = () => {
-      // const image = tipoEvento === 0 ? "images/webinar.jpg" : "images/aula.jpg";
-      // const checkedSoldout = soldout ? true : false;
-      const newAddedData = coursesObj.push({
+    const pushData = () => {
+      push(ref(database, "eventi/"), {
         titolo: titolo,
         relatori: relatori,
         data: data,
-        // photoName: image,
+        tipoEvento: tipoEvento,
         category: category,
         soldout: soldout,
-      });
-
-      console.log("CORSI", corsi);
+      })
+        .then(() => {
+          console.log("Data pushed");
+          getData(); // Recupera i dati dal database dopo l'inserimento
+        })
+        .catch((err) => {
+          console.log(err);
+        });
     };
-    pushNewData();
 
-    setCorsi(coursesObj);
+    console.log("CORSI", corsi);
+
+    pushData();
+
     alert("L'evento è stato aggiunto");
     setTitolo("");
     setRelatori("");
@@ -215,21 +131,42 @@ function App() {
     setSoldout(false);
   };
 
+  //Funzione cancellazione dati da Firebase
+
   const handleDelete = (e) => {
     e.preventDefault();
+    const selectedValue = corsi.find((corso) => {
+      return corso.titolo === deleteTitle;
+    });
 
-    const deleteData = () => {
-      const index = coursesObj.findIndex((object) => {
-        return object.titolo === selectedValue;
+    if (selectedValue) {
+      return remove(ref(database, `eventi/${selectedValue.id}`)).then(() => {
+        getData(); // Recupera i dati dal database dopo la cancellazione
+        setDeleteTitle("");
+        alert("L'evento è stato eliminato");
       });
-
-      coursesObj.splice(index, 1);
-    };
-    deleteData();
-
-    setCorsi(coursesObj);
-    alert("L'evento è stato eliminato");
+    } else {
+      console.log("Evento non trovato");
+      alert("Evento non trovato");
+    }
+    console.log("DELETE TITLE", deleteTitle);
+    console.log("CORSI AL DELETE", corsi);
   };
+
+  // Recupera i dati quando la pagina viene caricata
+  useEffect(() => {
+    getData();
+  }, []);
+
+  // Login all'admin area
+  // const handleLogin = (password) => {
+  //   const correctPassword = "Admin2023";
+  //   if (password === correctPassword) {
+  //     setAuthenticated(true);
+  //   } else {
+  //     alert("Incorrect password");
+  //   }
+  // };
 
   return (
     <Router>
@@ -237,32 +174,38 @@ function App() {
         <Routes>
           <Route exact path="/" element={<Home corsi={corsi} />}></Route>
           <Route
-            exact
+            path="/login"
+            element={<LoginForm setAuthenticated={setAuthenticated} />}
+          />
+          <Route
             path="/admin"
             element={
-              <Admin
-                {...{
-                  titolo,
-                  relatori,
-                  data,
-                  tipoEvento,
-                  category,
-                  soldout,
-                  handleSetTitolo,
-                  handleSetRelatori,
-                  handleSetData,
-                  handleSetSoldout,
-                  handleChange,
-                  handleSubmit,
-                  handleSetCategory,
-                  coursesObj,
-                  handleDelete,
-                  selectedValue,
-                  setSelectedValue,
-                }}
-              />
+              authenticated ? (
+                <Admin
+                  {...{
+                    titolo,
+                    relatori,
+                    data,
+                    tipoEvento,
+                    category,
+                    soldout,
+                    deleteTitle,
+                    handleSetTitolo,
+                    handleSetRelatori,
+                    handleSetData,
+                    handleSetSoldout,
+                    handleChange,
+                    handleSubmit,
+                    handleSetCategory,
+                    handleDeleteTitleChange,
+                    handleDelete,
+                  }}
+                />
+              ) : (
+                <Navigate to="/login" />
+              )
             }
-          ></Route>
+          />
         </Routes>
       </div>
     </Router>

@@ -7,9 +7,12 @@ function Corso({ coursesObj }) {
     <li className={`corso ${coursesObj.soldout ? "sold-out" : ""}`}>
       <img
         src={
-          coursesObj.tipoEvento === 0 ? "images/webinar.jpg" : "images/aula.jpg"
+          coursesObj.tipoEvento === "aula"
+            ? "images/aula.jpg"
+            : "images/webinar.jpg"
         }
         alt={coursesObj.titolo}
+        style={coursesObj.tipoEvento === "aula" ? { scale: "0.8" } : {}}
       />
       <div>
         <h3>{coursesObj.titolo}</h3>

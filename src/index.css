@@ -107,7 +107,8 @@ h3 {
   list-style: none;
   display: grid;
   grid-template-columns: 1fr 1fr 1fr;
-  gap: 1rem;
+  row-gap: 0.8rem; /* vertical gap */
+  column-gap: 0rem; /* horizontal gap */
 }
 
 .corso {
